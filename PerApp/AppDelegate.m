@@ -7,8 +7,13 @@
 //
 
 #import "AppDelegate.h"
+#import "ProjectNavigationController.h"
+#import "MMDrawerController.h"
+#import "MMDrawerVisualStateManager.h"
+
 
 @interface AppDelegate ()
+@property (nonatomic,strong) MMDrawerController * drawerController;
 
 @end
 
@@ -40,6 +45,77 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+-(void)pushToNewsFeedScreen{
+    
+    [self.window setRootViewController:nil];
+    
+    UIColor *navBarColor = [UIColor colorWithRed:52.0/255.0 green:56.0/255.0 blue:52.0/255.0 alpha:1.0];
+    //tintColor attribute change the background color of the navigation bar
+    /*
+     barTintColor attribute affect to the color of the
+     back indicator image, button titles, button images
+     */
+    [[UINavigationBar appearance] setBarTintColor:navBarColor];
+    
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+    // change navigation item title color
+//    NSDictionary *titleDict = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
+//    [[UINavigationBar appearance] setTitleTextAttributes:titleDict];
+
+    
+    UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    
+    UIViewController * leftSideDrawerViewController = [mainStoryBoard instantiateViewControllerWithIdentifier:@"MenuViewController"];
+    
+    UIViewController * centerViewController = [mainStoryBoard instantiateViewControllerWithIdentifier:@"HomeViewController"];
+    
+    ProjectNavigationController * navigationController = [[ProjectNavigationController alloc] initWithRootViewController:centerViewController];
+    [navigationController.navigationBar setTranslucent:YES];
+    
+    
+    ProjectNavigationController * leftSideNavController = [[ProjectNavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
+    [leftSideNavController.navigationBar setTranslucent:YES];
+    [leftSideNavController setNavigationBarHidden:YES animated:NO];
+//    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
+//    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
+//    leftSideNavController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+
+    
+
+    
+    self.drawerController = [[MMDrawerController alloc]
+                             initWithCenterViewController:navigationController
+                             leftDrawerViewController:leftSideDrawerViewController
+                             rightDrawerViewController:nil];
+    [self.drawerController setShowsShadow:YES];
+    [self.drawerController setRestorationIdentifier:@"MMDrawer"];
+    [self.drawerController setMaximumRightDrawerWidth:200.0];
+    [self.drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeAll];
+    [self.drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+    
+    [self.drawerController
+     setDrawerVisualStateBlock:^(MMDrawerController *drawerController, MMDrawerSide drawerSide, CGFloat percentVisible) {
+         MMDrawerControllerDrawerVisualStateBlock block;
+         block = [[MMDrawerVisualStateManager sharedManager]
+                  drawerVisualStateBlockForDrawerSide:drawerSide];
+         if(block){
+             block(drawerController, drawerSide, percentVisible);
+         }
+     }];
+    
+    UIColor * tintColor = [UIColor colorWithRed:29.0/255.0
+                                          green:173.0/255.0
+                                           blue:234.0/255.0
+                                          alpha:1.0];
+    [self.window setTintColor:tintColor];
+    [self.window setRootViewController:self.drawerController];
+    
 }
 
 @end

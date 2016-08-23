@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ProjectNavigationController.h
 //  PerApp
 //
 //  Created by Varun Kumar on 24/02/16.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface ProjectNavigationController : UINavigationController
 
 @end
-
